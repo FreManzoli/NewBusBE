@@ -65,4 +65,12 @@ public class CarrelloService {
                 .mapToDouble(c -> c.getViaggio().getCosto() * c.getQuantita())
                 .sum();
     }
+
+    //svuota il carrello
+    public void svuotaCarrello(UUID idUtente) {
+        List<Carrello> carrello = repository.findByUtenteId(idUtente);
+        for (Carrello c : carrello) {
+            repository.delete(c);
+        }
+    }
 }

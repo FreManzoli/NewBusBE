@@ -1,6 +1,7 @@
 package it.unife.sample.backend.controller;
 
 import it.unife.sample.backend.model.Utente;
+import it.unife.sample.backend.security.JwtUtil;
 import it.unife.sample.backend.service.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,20 @@ public class UtenteController {
     @Autowired
     private UtenteService service;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+
     // Metodo per creare un nuovo utente
     @PostMapping("/utenti")
-    public ResponseEntity<Utente> createUtente(@RequestBody Utente utente) {
+    public ResponseEntity<Map<String, String>> createUtente(@RequestBody Utente utente) {
         Utente nuovoUtente = service.createUtente(utente);
-        return ResponseEntity.ok(nuovoUtente);
+        String token = jwtUtil.generateToken(nuovoUtente.getId_utente(), nuovoUtente.getEmail());
+
+        return ResponseEntity.ok(Map.of(
+            "token", token,
+            "email", nuovoUtente.getEmail()
+        ));
     }
 
 
@@ -35,12 +45,17 @@ public class UtenteController {
 
     //servizio di autenticazione nel caso in cui si sia già registrati
     @PostMapping("/utenti/authenticate")
-    public ResponseEntity<Utente> authenticateUtente(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<Map<String, String>> authenticateUtente(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         String password = credentials.get("password");
-
         Utente utente = service.authenticateUtente(email, password);
-        return ResponseEntity.ok(utente);
+
+        String token = jwtUtil.generateToken(utente.getId_utente(), utente.getEmail());
+
+        return ResponseEntity.ok(Map.of(
+            "token", token,
+            "email", utente.getEmail()
+        ));
     }
 
     //metodo per ottenere dati sull'utente a partire dall'email
