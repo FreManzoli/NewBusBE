@@ -3,6 +3,7 @@ package it.unife.sample.backend.controller;
 import it.unife.sample.backend.model.Viaggio1;
 import it.unife.sample.backend.service.Viaggio1Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,19 +48,29 @@ public class Viaggio1Controller {
         }
     }
 
-
-    @GetMapping("/parcheggio")  //nel front-end avremo la form che chiama un API collegata all'ulr http://localhost:8080/api/Viaggio1-controller/parcheggio?partenza=...&arrivo=...
-    public ResponseEntity<List<Object[]>> findCustomByPartenzaAndArrivo(@RequestParam String partenza, @RequestParam String arrivo) {   //ResponseEntity rappresenta l'intera risposta http
-        List<Object[]> viaggio = service1.findCustomByPartenzaAndArrivo(partenza, arrivo);
-
-        if((partenza.equals("") || arrivo.equals(""))){ //se il form è stato compilato male dall'utente ritorni codice 400 BAD REQUEST senza body nella risposta
-            ResponseEntity.badRequest().build();
+    @GetMapping("/tutti")
+    public ResponseEntity<List<Viaggio1>> getAllViaggi() {
+        List<Viaggio1> viaggi = service1.findAll(); // Assicurati che il service abbia questo metodo
+        if (viaggi.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(viaggi);
         }
+    }
 
-        if(viaggio.isEmpty()){
-            return ResponseEntity.notFound().build();   //se non trova enssun record nel db che soddisfi la richiesta ritorna codice 404 NOT FOUND
-        }else{
-            return ResponseEntity.ok(viaggio);  //se invece lo trova resituisce codice 200 OK e mette nel body della risposta i record del db che soddisfano la richiesta
+
+    @GetMapping("/parcheggio")// fornisce al gruppo dei parcheggi i dati per parcheggiare il bus
+    public ResponseEntity<List<Object[]>> findBus() {
+        try {
+            List<Object[]> viaggio = service1.findBus();
+            if (viaggio.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            } else {
+                return ResponseEntity.ok(viaggio);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

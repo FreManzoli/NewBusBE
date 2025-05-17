@@ -15,11 +15,10 @@ public interface Viaggio1Repository extends JpaRepository<Viaggio1, UUID> {
 
     List<Viaggio1> findByPartenzaAndArrivo(String partenza, String arrivo); //questa chiamata effettua la seguente query sql: SELECT * FROM viaggio1 WHERE partenza = ? AND arrivo = ?;
     List<Viaggio1> findByPartenza(String partenza); //questa chiamata effettua la seguente query sql: SELECT * FROM viaggio1 WHERE partenza = ?;
+    List<Viaggio1> findAll();
 
-    @Query("SELECT v.arrivo, b.targa, b.lunghezza, b.larghezza " +
-       "FROM Viaggio1 v JOIN v.targa b " +
-       "WHERE v.partenza = :partenza AND v.arrivo = :arrivo")
-    List<Object[]> findCustomByPartenzaAndArrivo(@Param("partenza") String partenza,@Param("arrivo") String arrivo);
+    @Query("SELECT v.arrivo, v.ora_arrivo, b.targa, b.lunghezza, b.larghezza " + "FROM Viaggio1 v JOIN v.targa b ")
+    List<Object[]> findBus();
 
     @Query("SELECT v FROM Viaggio1 v JOIN v.classe c WHERE v.partenza = :partenza AND v.arrivo = :arrivo AND c.costo BETWEEN :min AND :max")
     List<Viaggio1> findByCosto(@Param("min") double min, @Param("max") double max, @Param("partenza") String partenza,@Param("arrivo") String arrivo);

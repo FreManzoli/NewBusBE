@@ -77,7 +77,9 @@ public class CarrelloController {
     public ResponseEntity<Void> svuotaCarrello(HttpServletRequest request) {
         try {
             UUID idUtente = extractUserIdFromToken(request);
+            System.out.println("ID utente estratto: " + idUtente);
             carrelloService.svuotaCarrello(idUtente);
+            System.out.println("Carrello svuotato con successo");
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             e.printStackTrace();

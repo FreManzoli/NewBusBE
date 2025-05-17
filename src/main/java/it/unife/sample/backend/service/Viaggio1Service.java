@@ -33,10 +33,17 @@ public class Viaggio1Service {
     }
 
     /*
+     ritorna tutti i record della tabella Viaggio1
+    */
+    public List<Viaggio1> findAll() {
+        return repository.findAll();
+    }
+
+    /*
      ritorna la destinzaione e i dati fisici dell'autobus
     */
-    public List<Object[]> findCustomByPartenzaAndArrivo(String partenza, String arrivo) {
-        return repository.findCustomByPartenzaAndArrivo(partenza, arrivo);
+    public List<Object[]> findBus() {
+        return repository.findBus();
     }
 
     /*
