@@ -27,6 +27,7 @@ public class CarrelloController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    //funzione che estrae l'ID utente dal token JWT presente nell'intestazione della richiesta ( le operazioni del carrello possono svolgersi solo da autenticati)
     private UUID extractUserIdFromToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -36,7 +37,7 @@ public class CarrelloController {
         return jwtUtil.extractUserId(token); // Estrai l'ID utente dal token
     }
 
-    @PostMapping("/aggiungi")
+    @PostMapping("/aggiungi") // Aggiunge un viaggio al carrello
     public ResponseEntity<Carrello> addViaggioToCarrello(HttpServletRequest request, @RequestParam UUID idViaggio, @RequestParam int quantita) {
         try {
             String authHeader = request.getHeader("Authorization");
@@ -51,14 +52,14 @@ public class CarrelloController {
         }
     }
 
-    @GetMapping
+    @GetMapping // visualizza i viaggi del cliente
     public ResponseEntity<List<Carrello>> getCarrelloByUtente(HttpServletRequest request) {
         UUID idUtente = extractUserIdFromToken(request);
         List<Carrello> carrello = carrelloService.getCarrelloByUtente(idUtente);
         return ResponseEntity.ok(carrello);
     }
 
-    @DeleteMapping("/rimuovi")
+    @DeleteMapping("/rimuovi")// Elimina un viaggio dal carrello
     public ResponseEntity<Void> removeViaggioFromCarrello(HttpServletRequest request,@RequestParam UUID idViaggio) {
 
         UUID idUtente = extractUserIdFromToken(request);
@@ -66,14 +67,14 @@ public class CarrelloController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/totale")
+    @GetMapping("/totale")//calcola il totale del carrello
     public ResponseEntity<Double> calcolaTotaleCarrello(HttpServletRequest request) {
         UUID idUtente = extractUserIdFromToken(request);
         double totale = carrelloService.calcolaTotaleCarrello(idUtente);
         return ResponseEntity.ok(totale);
     }
 
-    @DeleteMapping("/svuota")
+    @DeleteMapping("/svuota")//svuota il carrello
     public ResponseEntity<Void> svuotaCarrello(HttpServletRequest request) {
         try {
             UUID idUtente = extractUserIdFromToken(request);
